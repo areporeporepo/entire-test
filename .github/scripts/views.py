@@ -10,7 +10,7 @@ headers = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github+
 
 # --- Collect traffic data ---
 gist = requests.get(f"https://api.github.com/gists/{GIST_ID}", headers=headers).json()
-state = json.loads(gist.files["state.json"]["content"]) if "state.json" in gist.get("files", {}) else {}
+state = json.loads(gist["files"]["state.json"]["content"]) if "state.json" in gist.get("files", {}) else {}
 
 total_u = state.get("total_u", 0)
 last_seen_u = state.get("last_u", 0)
