@@ -14,4 +14,4 @@ UCLA, 2019
 
 [🌍 Globe](https://huggingface.co/spaces/anhnq/agent) · [Endorphin](https://www.icloud.com/sharedalbum/#B26GWZuqDe1JNh)
 
-![](https://komarev.com/ghpvc/?username=areporeporepo&style=flat&color=grey&label=views)
+![views](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/areporeporepo/382da78afcacc34d60bd62245a42019f/raw/views.json)

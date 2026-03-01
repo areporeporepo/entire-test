@@ -1,0 +1,14 @@
+name: Profile Views
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python .github/scripts/views.py
+        env:
+          GH_GIST_TOKEN: ${{ secrets.GH_GIST_TOKEN }}
+          VIEWS_GIST_ID: ${{ secrets.VIEWS_GIST_ID }}
