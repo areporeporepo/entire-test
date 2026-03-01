@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Dynamic profile README — Claude generates content based on traffic audience."""
+"""Dynamic profile README — AI generates content based on traffic audience."""
 import json, os, re, requests
 from datetime import datetime, timezone
 
 REPO = "areporeporepo/areporeporepo"
 GIST_ID = os.environ["VIEWS_GIST_ID"]
 TOKEN = os.environ["GH_GIST_TOKEN"]
-ANTHROPIC_KEY = os.environ["ANTHROPIC_API_KEY"]
+HF_TOKEN = os.environ["HF_TOKEN"]
 gh = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github+json"}
 
 # --- Collect traffic data ---
@@ -28,7 +28,7 @@ ref_map = {r["referrer"]: r["count"] for r in referrers} if referrers else {}
 top_ref = referrers[0]["referrer"] if referrers else "github.com"
 now = datetime.now(timezone.utc).strftime("%b %d, %Y")
 
-# --- Ask Claude to write the profile ---
+# --- Ask AI to write the profile ---
 BIO = """
 Name: Anh Nguyen
 Location: Palo Alto, CA
@@ -65,29 +65,27 @@ Adapt the tone and content emphasis based on where visitors are coming from:
 
 Keep it SHORT — under 15 lines of markdown. No emojis. No badges. No images.
 Must include the Globe and Photos links at the bottom separated by " · ".
-End with a single line: <sub>visitor count · top referrer · date</sub>
+End with a single line: <sub>{total_u} visitors · {top_ref} · {now}</sub>
 """
 
 resp = requests.post(
-    "https://api.anthropic.com/v1/messages",
-    headers={
-        "x-api-key": ANTHROPIC_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-    },
+    "https://router.huggingface.co/v1/chat/completions",
+    headers={"Authorization": f"Bearer {HF_TOKEN}", "Content-Type": "application/json"},
     json={
-        "model": "claude-haiku-4-5-20251001",
+        "model": "Qwen/Qwen2.5-72B-Instruct",
         "max_tokens": 512,
         "messages": [{"role": "user", "content": prompt}],
     },
 )
 
 if resp.status_code == 200:
-    profile_content = resp.json()["content"][0]["text"].strip()
-    print(f"Claude generated {len(profile_content)} chars")
+    profile_content = resp.json()["choices"][0]["message"]["content"].strip()
+    # Strip markdown code fences if the model wraps its output
+    profile_content = re.sub(r"^```(?:markdown|md)?\n?", "", profile_content)
+    profile_content = re.sub(r"\n?```$", "", profile_content)
+    print(f"AI generated {len(profile_content)} chars")
 else:
-    # Fallback if API fails
-    print(f"Claude API error {resp.status_code}: {resp.text}")
+    print(f"HF API error {resp.status_code}: {resp.text}")
     profile_content = f"""### Anh Nguyen
 
 Neuroscience + AI, Palo Alto. UCLA 2019.
@@ -96,9 +94,9 @@ Neuroscience + AI, Palo Alto. UCLA 2019.
 
 ---
 
-[🌍 Globe](https://huggingface.co/spaces/anhnq/agent) · [Endorphin](https://www.icloud.com/sharedalbum/#B26GWZuqDe1JNh)
+[Globe](https://huggingface.co/spaces/anhnq/agent) · [Endorphin](https://www.icloud.com/sharedalbum/#B26GWZuqDe1JNh)
 
-<sub>{total_u} visitors from {top_ref} · {now}</sub>"""
+<sub>{total_u} visitors · {top_ref} · {now}</sub>"""
 
 # --- Write README ---
 readme_path = os.path.join(os.environ.get("GITHUB_WORKSPACE", "."), "README.md")
