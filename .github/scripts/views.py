@@ -36,9 +36,22 @@ payload = {
     "_last_u": new_uniques,
     "_total_u": total_u,
 }
+# Get referrers and popular paths
+referrers = requests.get(f"https://api.github.com/repos/{REPO}/traffic/popular/referrers", headers=headers).json()
+paths = requests.get(f"https://api.github.com/repos/{REPO}/traffic/popular/paths", headers=headers).json()
+
+ref_lines = [f"{r['referrer']}: {r['count']} ({r['uniques']} unique)" for r in referrers[:10]]
+path_lines = [f"{p['path']}: {p['count']} ({p['uniques']} unique)" for p in paths[:10]]
+
 requests.patch(
     f"https://api.github.com/gists/{GIST_ID}",
     headers=headers,
-    json={"files": {"views.json": {"content": json.dumps(payload)}}},
+    json={"files": {
+        "views.json": {"content": json.dumps(payload)},
+        "referrers.md": {"content": "# Referrers (14-day)\n\n" + ("\n".join(ref_lines) or "No data yet")},
+        "popular.md": {"content": "# Popular Content (14-day)\n\n" + ("\n".join(path_lines) or "No data yet")},
+    }},
 )
 print(f"total={total} unique={total_u} delta={delta} delta_u={delta_u}")
+print(f"referrers: {ref_lines}")
+print(f"paths: {path_lines}")
