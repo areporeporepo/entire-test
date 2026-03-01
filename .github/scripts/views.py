@@ -7,35 +7,28 @@ GIST_ID = os.environ["VIEWS_GIST_ID"]
 TOKEN = os.environ["GH_GIST_TOKEN"]
 headers = {"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github+json"}
 
-# Get current count from gist
+# Get current state from gist
 gist = requests.get(f"https://api.github.com/gists/{GIST_ID}", headers=headers).json()
-current = json.loads(gist["files"]["views.json"]["content"])
-total = int(current["message"])
+badge = json.loads(gist["files"]["views.json"]["content"])
+state = json.loads(gist["files"]["state.json"]["content"]) if "state.json" in gist["files"] else {}
+
+total_u = state.get("total_u", int(badge["message"]))
+last_seen = state.get("last", 0)
+last_seen_u = state.get("last_u", 0)
 
 # Get 14-day traffic from GitHub (needs repo scope)
 traffic = requests.get(f"https://api.github.com/repos/{REPO}/traffic/views", headers=headers).json()
 new_views = traffic.get("count", 0)
 new_uniques = traffic.get("uniques", 0)
 
-# Accumulate (store last seen count to avoid double-counting)
-last_seen = int(current.get("_last", 0))
-last_seen_u = int(current.get("_last_u", 0))
-delta = max(0, new_views - last_seen)
+# Accumulate (avoid double-counting)
 delta_u = max(0, new_uniques - last_seen_u)
-total += delta
-total_u = int(current.get("_total_u", 0)) + delta_u
+total_u += delta_u
 
-# Update gist
-payload = {
-    "schemaVersion": 1,
-    "label": "views",
-    "message": str(total_u),
-    "color": "grey",
-    "style": "flat",
-    "_last": new_views,
-    "_last_u": new_uniques,
-    "_total_u": total_u,
-}
+# Shields.io badge (clean, no extra fields)
+badge = {"schemaVersion": 1, "label": "views", "message": str(total_u), "color": "grey", "style": "flat"}
+# Internal state
+state = {"last": new_views, "last_u": new_uniques, "total_u": total_u}
 # Get referrers and popular paths
 referrers = requests.get(f"https://api.github.com/repos/{REPO}/traffic/popular/referrers", headers=headers).json()
 paths = requests.get(f"https://api.github.com/repos/{REPO}/traffic/popular/paths", headers=headers).json()
@@ -47,7 +40,8 @@ requests.patch(
     f"https://api.github.com/gists/{GIST_ID}",
     headers=headers,
     json={"files": {
-        "views.json": {"content": json.dumps(payload)},
+        "views.json": {"content": json.dumps(badge)},
+        "state.json": {"content": json.dumps(state)},
         "referrers.md": {"content": "# Referrers (14-day)\n\n" + ("\n".join(ref_lines) or "No data yet")},
         "popular.md": {"content": "# Popular Content (14-day)\n\n" + ("\n".join(path_lines) or "No data yet")},
     }},
