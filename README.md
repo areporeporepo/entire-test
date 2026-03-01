@@ -1,20 +1,19 @@
 <!-- profile:start -->
-# Anh Nguyen
+## Anh Nguyen
 
-Palo Alto, CA | UCLA '19
+Location: Palo Alto, CA  
+Education: UCLA, 2019  
+Current Coursework: NBIO 206, NBIO 220 (Winter 2026)
 
 ### Skills
-- **EEG Signal Processing**, Brain-Computer Interfaces, Motor Imagery Decoding
-- Python, PyTorch, MNE-Python, Three.js, TypeScript, Rust, Go
-
-### Current Coursework
-- NBIO 206, NBIO 220 (Winter 2026)
+- EEG signal processing, brain-computer interfaces, motor imagery decoding
+- Tech: Python, PyTorch, MNE-Python, Three.js, TypeScript, Rust, Go
 
 ### Projects
 - **OpenEyes1**: Open-source NASA Eyes solar system visualization (Three.js + astronomy-engine)
 - **Agent Space**: 3D globe + AI chat on HuggingFace (CesiumJS + FastAPI + Qwen 72B)
 - **NVIDIA Atlas**: Weather forecasting on Modal (4.3B param model, A100 GPU)
-- **Brain-Computer Interface Research**: EEG, motor imagery
+- **Brain-computer Interface Research**: EEG, motor imagery
 
 ### Interests
 Fusion energy, neuroscience, semiconductors (TSMC/NVIDIA), national labs
