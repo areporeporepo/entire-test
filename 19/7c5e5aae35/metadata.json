@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.4.8",
+  "checkpoint_id": "197c5e5aae35",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "hello-entire.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/19/7c5e5aae35/0/metadata.json",
+      "transcript": "/19/7c5e5aae35/0/full.jsonl",
+      "context": "/19/7c5e5aae35/0/context.md",
+      "content_hash": "/19/7c5e5aae35/0/content_hash.txt",
+      "prompt": "/19/7c5e5aae35/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 4,
+    "cache_creation_tokens": 16309,
+    "cache_read_tokens": 44717,
+    "output_tokens": 40,
+    "api_call_count": 2
+  }
+}
